@@ -1,0 +1,53 @@
+/**
+ * epd값의 유닛 타입을 반환 @tags
+ * @param {any} epd epd값
+ * @return {any} a 리턴값
+ */
+function GetUnitType(epd) {
+    return bread_epd(epd+0x24/4, 2);
+}
+
+
+function WipeScreenAll() {
+    printAllAt(0," ");
+    printAllAt(1," ");
+    printAllAt(2," ");
+    printAllAt(3," ");
+    printAllAt(4," ");
+    printAllAt(5," ");
+    printAllAt(6," ");
+    printAllAt(7," ");
+    printAllAt(8," ");
+    printAllAt(9," ");
+    printAllAt(10," ");
+}
+
+function WipeScreen() {
+    printAt(0," ");
+    printAt(1," ");
+    printAt(2," ");
+    printAt(3," ");
+    printAt(4," ");
+    printAt(5," ");
+    printAt(6," ");
+    printAt(7," ");
+    printAt(8," ");
+    printAt(9," ");
+    printAt(10," ");
+}
+
+/**
+ * 이거 한글도 되냐? @tags
+ * @param {any} locId $L()로 반환되는 로케이션 ID
+ * @param {any} left 좌표
+ * @param {any} top 좌표 
+ * @param {any} right 좌표
+ * @param {any} bottom 좌표  
+ */
+function SetLocLTRB(locId,left,top,right,bottom) {
+    const locEPD = EPD(0x58DC4C) + locId * 5;
+    dwwrite_epd(locEPD, left);//Left
+    dwwrite_epd(locEPD + 1, top);//Top
+    dwwrite_epd(locEPD + 2, right);//Right
+    dwwrite_epd(locEPD + 3, bottom);//Bottom
+}

@@ -1,0 +1,68 @@
+import Utility;
+
+import GlobalConstant;
+import GameInformation as GI;
+
+var text_display_sound_flag = true;
+
+function Loop() {
+    //화면 고정
+    setloc("Loc1", GlobalConstant.opening_loc_x, GlobalConstant.opening_loc_y);
+    foreach (player : EUDLoopPlayer(None, Force1)) {
+        setcurpl(player);
+        CenterView("Loc1");
+    }
+    //텍스트 출력 효과음 - 1회
+    if (text_display_sound_flag == true) {
+        foreach (cp : EUDLoopPlayer(None,Force1)) {
+            setcurpl(cp);
+            PlayWAV("staredit\\wav\\0119.WAV");
+        }
+        text_display_sound_flag = false;    
+    }
+    
+    //텍스트 출력
+    foreach (cp : EUDLoopPlayer(None,Force1)) {
+        setcurpl(cp);
+        if (cp == 0) {//방장에게 보여지는 텍스트
+            printAt(0," ");
+            printAt(1,"\x13----------------------------------------------");
+            printAt(2," ");
+            printAt(3,"\x13모드를 선택해주세요");
+            printAt(4,"\x13Q. 팀 플레이 모드");
+            printAt(5,"\x13W. 싱글 플레이 모드");
+            printAt(6," ");
+            printAt(7,"\x13----------------------------------------------");
+        }
+        else {//그 외 유저들 텍스트
+            printAt(0," ");
+            printAt(1,"\x13----------------------------------------------");
+            printAt(2," ");
+            printAt(3,"\x13방장이 모드를 선택 중입니다");
+            printAt(4,"\x13Q. 팀 플레이 모드");
+            printAt(5,"\x13W. 싱글 플레이 모드");
+            printAt(6," ");
+            printAt(7,"\x13----------------------------------------------");
+        }
+    }
+    
+    //선택시
+    setcurpl(0);
+    if (@KeyDown(0,"Q")) {
+        foreach (cp : EUDLoopPlayer(None,Force1)) {
+            setcurpl(cp);
+            PlayWAV("staredit\\wav\\0115.WAV");
+        }
+        printAllAt(10,"\x13 팀 플레이 모드가 선택되었습니다");
+        GI.game_mode = 0;
+        GI.GameStepUpdate();
+    }
+    else if (@KeyDown(0,"W")) {
+        //PlayWAV("staredit\\wav\\0115.WAV");
+        // Utility.WipeScreen();
+        // GI.game_mode = 1;
+        // GI.GameStepUpdate();
+        PlayWAV("staredit\\wav\\0164.WAV");
+        printAt(10,"\x13 싱글 플레이 모드는 현재 선택 불가능합니다");
+    }
+}

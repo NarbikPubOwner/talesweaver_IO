@@ -1,0 +1,73 @@
+import Utility;
+
+import GameInformation as GI;
+import GlobalConstant;
+
+var text_display_sound_flag = true;
+
+function Loop() {
+    //화면 고정
+    setloc("Loc1", GlobalConstant.opening_loc_x, GlobalConstant.opening_loc_y);
+    foreach (player : EUDLoopPlayer(None, Force1)) {
+        setcurpl(player);
+        CenterView("Loc1");
+    }
+    //텍스트 출력 효과음 - 1회
+    if (text_display_sound_flag == true) {
+        foreach (cp : EUDLoopPlayer(None,Force1)) {
+            setcurpl(cp);
+            PlayWAV("staredit\\wav\\0119.WAV");
+        }
+        text_display_sound_flag = false;    
+    }
+    //텍스트 출력
+    foreach (cp : EUDLoopPlayer(None,Force1)) {
+        setcurpl(cp);
+        if (cp == 0) {//방장에게 보여지는 텍스트
+            printAt(0," ");
+            printAt(1,"\x13----------------------------------------------");
+            printAt(2," ");
+            printAt(3,"\x13난이도를 선택해주세요");
+            printAt(4,"\x13Q. 노말(Normal)");
+            printAt(5,"\x13W. 하드(Hard)");
+            printAt(6,"\x13E. 헬(Hell)");
+            printAt(7," ");
+            printAt(8,"\x13----------------------------------------------");
+        }
+        else {//그 외 유저들 텍스트
+            printAt(0," ");
+            printAt(1,"\x13----------------------------------------------");
+            printAt(2," ");
+            printAt(3,"\x13방장이 난이도를 선택중입니다");
+            printAt(4,"\x13Q. 노말(Normal)");
+            printAt(5,"\x13W. 하드(Hard)");
+            printAt(6,"\x13E. 헬(Hell)");
+            printAt(7," ");
+            printAt(8,"\x13----------------------------------------------");
+        }
+    }
+
+    //선택시
+    setcurpl(0);
+    if (@KeyDown(0,"Q")) {
+        foreach (cp : EUDLoopPlayer(None,Force1)) {
+            setcurpl(cp);
+            PlayWAV("staredit\\wav\\0115.WAV");
+        }
+        Utility.WipeScreenAll();
+        printAllAt(10,"\x13 노말(Normal)난이도가 선택되었습니다");
+        GI.game_difficulty = 0;
+        GI.GameStepUpdate();
+    }
+    else if (@KeyDown(0,"W")) {
+        setcurpl(0);
+        PlayWAV("staredit\\wav\\0164.WAV");
+        printAt(10,"\x13 하드 난이도는 현재 선택 불가능합니다");
+    }
+    else if (@KeyDown(0,"E")) {
+        setcurpl(0);
+        PlayWAV("staredit\\wav\\0164.WAV");
+        printAt(10,"\x13 헬 난이도는 현재 선택 불가능합니다");
+    }
+
+}

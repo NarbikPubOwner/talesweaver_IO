@@ -1,0 +1,16 @@
+import GameInformation as GI;
+
+var RemoveRevealer_flag = true;
+
+/**
+ * 리빌러 제거 실행
+ */
+function Loop() {
+	//맵에 깔린 리빌러 삭제
+    	if (RemoveRevealer_flag == true) {
+        	RemoveUnit("Map Revealer", AllPlayers);
+        	RemoveRevealer_flag = false;
+    	}
+    	
+    	GI.GameStepUpdate();
+}

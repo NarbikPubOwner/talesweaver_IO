@@ -1,0 +1,49 @@
+import BGMPlayer as BGM;
+
+import Utility;
+
+import GameInformation as GI;
+import PlayerInformation as PI;
+import GlobalConstant;
+
+var OpeningDirecting_timer = 0;
+var init_flag = true;
+/**
+ * 연출 관련 루프입니다.
+ */
+function Loop() {
+    //BGM설정, 최초 1회만
+    if (init_flag == true) {
+        Utility.WipeScreenAll();
+        foreach (cp : EUDLoopPlayer(None, Force1)) {
+            setcurpl(cp);
+            PI.bgmIndex[cp] = 0;
+            PI.bgmStatement[cp] = 1;
+            BGM.SetBGM(PI.bgmIndex[cp]);
+            BGM.noDelayPlay();
+        }
+        init_flag = false;
+    }
+    
+    //연출 지형으로 화면 이동 | 화면 고정;
+    setloc("Loc1", GlobalConstant.opening_loc_x, GlobalConstant.opening_loc_y);
+    foreach (player : EUDLoopPlayer(None, Force1)) {
+        setcurpl(player);
+        CenterView("Loc1");
+    }
+
+    //오프닝 텍스트 출력
+    printAllAt(0," ");
+    printAllAt(1,"\x04\x13----------------------------------------------");
+    printAllAt(2," ");
+    printAllAt(3,"\x04\x13테일즈위버 키우기");
+    printAllAt(4,"\x04\x13Episode 1. Apparition [발현]");
+    printAllAt(5,"\x04\x13만든이 : 빌드라크");
+    printAllAt(6," ");
+    printAllAt(7,"\x04\x13----------------------------------------------");
+
+    OpeningDirecting_timer += 1;
+    if (OpeningDirecting_timer >= 192) {
+        GI.GameStepUpdate();   
+    }
+}
