@@ -1,4 +1,5 @@
 import GameInformation as GI;
+import Utility;
 
 var RemoveRevealer_flag = true;
 
@@ -7,10 +8,48 @@ var RemoveRevealer_flag = true;
  */
 function Loop() {
 	//맵에 깔린 리빌러 삭제
-    	if (RemoveRevealer_flag == true) {
-        	RemoveUnit("Map Revealer", AllPlayers);
-        	RemoveRevealer_flag = false;
-    	}
-    	
-    	GI.GameStepUpdate();
+	if (RemoveRevealer_flag == true) {
+		RemoveUnit("Map Revealer", AllPlayers);
+		RemoveRevealer_flag = false;
+	}
+	foreach (cp : EUDLoopPlayer(None,Force1)) {
+		switch (cp) {
+			case 0:
+				setloc("Loc1",1008,704);
+				CreateUnit(1, 164, "Loc1", cp);
+				setloc("Loc1",1104,704);
+				CreateUnit(1, 155, "Loc1", cp);
+				setloc("Loc1",1200,704);
+				//CreateUnit(1, fixedData.skillManageUnitId, "Loc1", cp);
+				break;
+			case 1:
+				setloc("Loc1",2480,704);
+				CreateUnit(1, 164, "Loc1", cp);
+				setloc("Loc1",2576,704);
+				CreateUnit(1, 155, "Loc1", cp);
+				setloc("Loc1",2672,704);
+				//CreateUnit(1, fixedData.skillManageUnitId, "Loc1", cp);
+				break;
+			case 2:
+				setloc("Loc1",1008,2176);
+				CreateUnit(1, 164, "Loc1", cp);
+				setloc("Loc1",1104,2176);
+				CreateUnit(1, 155, "Loc1", cp);
+				setloc("Loc1",1200,2176);
+				//CreateUnit(1, fixedData.skillManageUnitId, "Loc1", cp);
+				break;
+			case 3:
+				setloc("Loc1",2480,2176);
+				CreateUnit(1, 164, "Loc1", cp);
+				setloc("Loc1",2576,2176);
+				CreateUnit(1, 155, "Loc1", cp);
+				setloc("Loc1",2672,2176);
+				//CreateUnit(1, fixedData.skillManageUnitId, "Loc1", cp);
+				break;
+			default:
+				break;
+		}
+	}
+
+	GI.GameStepUpdate();
 }

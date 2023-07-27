@@ -4,43 +4,37 @@ import Utility;
 
 import GameInformation as GI;
 import PlayerInformation as PI;
+import GlobalConstant as GC;
 
 import BasicSetting;
 import OpeningDirecting;
 import GameModeSelect;
 import GameDifficultySelect;
-import CharacterSelect;
-/**
- * 이거 한글도 되냐? @tags
- * @param {any} a 인자 c
- * @param {any} b 인자 b 
- * @return {any} c 리턴값
- */
-function jsdocEx(a, b){
-}
+import MainGame;
 
 function onPluginStart() {//맵 실행시 한번만 실행
 	BGM.loadSound();
     SetMemory(0x5124F0, SetTo, 21);// 기본 배속, 약 48프레임당 1초
+	
+	PI.Init();
 }
 
 function beforeTriggerExec() {//클래식 트리거 작동 전 실행(맵에 기본적으로 들어가있는 트리거들)
+
 	//BGM실행
-	 foreach (cp : EUDLoopPlayer(None,Force1)) {
+	foreach (cp : EUDLoopPlayer(None,Force1)) {
 		setcurpl(cp);
-        if (PI.bgmStatement[cp]) { // bgmStatement가 true이면
+        if (PI.bgmStatement[cp]) {
             BGM.Play();
-            // BGM.Play(); 함수를 실행함, 해당 함수는 연속해서 실행되야 제데로 나옴 
-            // 외의 경우에는 실행하지 않음
         }
     }
-
+	
 	//게임 진행
 	switch (GI.game_step) {
 		//기본 초기화 진행
 		case 0:
 			BasicSetting.Loop();
-				break;
+			break;
 		//오프닝 연출
 		case 1:
 			OpeningDirecting.Loop();
@@ -52,11 +46,12 @@ function beforeTriggerExec() {//클래식 트리거 작동 전 실행(맵에 기
 			GameDifficultySelect.Loop();
 			break;
 		case 4:
-			CharacterSelect.Loop();
+			MainGame.Loop();
+			
 			break;
+
 		default:
-			//printAll("디폴트 스텝");
-				break;
+			break;
 	}
 	//C.	게임 모드 선택
 	//D.	게임 난이도 선택

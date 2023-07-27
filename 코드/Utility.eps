@@ -1,12 +1,45 @@
+
+
 /**
  * epd값의 유닛 타입을 반환 @tags
- * @param {any} epd epd값
- * @return {any} a 리턴값
+ * @param {any} epd epd 값
+ * @return {any} unit_id 리턴값
  */
 function GetUnitType(epd) {
-    return bread_epd(epd+0x24/4, 2);
+    return bread_epd(epd+0x024/4, 2);
+}
+/**
+ * value에 따라 해당 유닛의 타입을 구조오프셋에 기입
+ * (0 = 일반 유닛, 1 = 플레이어블 캐릭터, 2 = 보스 유닛) @tags
+ * @param {any} epd epd 값
+ * @param {any} value 유닛 타입 값
+ */
+function SetUnitType(epd, value) {
+    bwrite_epd(epd+0x024/4, 2, value);
 }
 
+// function GetUnitGroup(epd) {
+//     return bread_epd(epd+0x064/4, 2);
+// }
+// function SetUnitGroup(epd, value) {
+//     bwrite_epd(epd+0x064/4, 2, value);
+// }
+
+
+
+/**
+ * 유닛 타입을 정해서 유닛을 생성하는 기능, 1회 최대 생성개수는 1개로 고정 @tags
+ * @param {any} Unit  베이스 유닛
+ * @param {any} Where 생성위치 로케이션, $l("loc1") 형식으로 사용 해야함
+ * @param {any} ForPlayer 생성 된 유닛을 소유 할 플레이어
+ * @param {any} UnitType 유닛 타입 | 0:일반 유닛, 1:플레이어블 유닛, 2:보스 유닛
+
+ */
+function CreateUnitCustom(Unit, Where : TrgLocation, ForPlayer, UnitType) {
+    const epd = epdread_epd(EPD(0x628438));
+    CreateUnit(1, Unit, Where, ForPlayer);
+    SetUnitType(epd, UnitType);
+}
 
 function WipeScreenAll() {
     printAllAt(0," ");
@@ -36,6 +69,12 @@ function WipeScreen() {
     printAt(10," ");
 }
 
+function ProductionQueueReset(clickedEPD) {
+    dwwrite_epd(clickedEPD + 0x98/4, 0 + 228*65536);
+    wwrite_epd(clickedEPD+0x9C/4,0, 228); // 세번째
+    wwrite_epd(clickedEPD+0x9C/4,2, 228); // 네번째
+    wwrite_epd(clickedEPD+0xA0/4,0, 228); // 다섯번째
+}
 /**
  * 이거 한글도 되냐? @tags
  * @param {any} locId $L()로 반환되는 로케이션 ID

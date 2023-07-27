@@ -1,5 +1,25 @@
+import GameInformation as GI;
 //bgm관련
 const bgmIndex = PVariable(); // [0,0,0,0,0,0,0,0];
 const bgmStatement = PVariable(); // BGM 상태 [0,0,0,0,0,0,0,0];
 
-const class_id = EUDArray(list(228,228,228,228,228,228,228,228));//선택한 유닛 228
+const class_id = PVariable();
+const hunt_zone_level = PVariable();
+const hunt_zone_level_max = 10;
+const hunt_zone_level_min = 0;
+const hunt_zone_unit_count = PVariable();
+
+function Init() {
+    foreach (cp : EUDLoopPlayer(None, Force1)) {
+        class_id[cp] = 228;
+        hunt_zone_level[cp] = 0;
+        hunt_zone_unit_count[cp] = 0;
+    }
+}
+
+function huntZoneLevelIncrease(cp) {
+    hunt_zone_level[cp] = hunt_zone_level[cp] + 1;
+}
+function huntZoneLevelDecrease(cp) {
+    hunt_zone_level[cp] = hunt_zone_level[cp] - 1;
+}
