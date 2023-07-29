@@ -9,11 +9,21 @@ const hunt_zone_level_max = 10;
 const hunt_zone_level_min = 0;
 const hunt_zone_unit_count = PVariable();
 
+const hpLevel = PVariable();
+const potionLevel = PVariable();
+const QSkillLevel = PVariable();
+const WSkillLevel = PVariable();
+
 function Init() {
     foreach (cp : EUDLoopPlayer(None, Force1)) {
         class_id[cp] = 228;
         hunt_zone_level[cp] = 0;
         hunt_zone_unit_count[cp] = 0;
+
+        hpLevel[cp] = 0;
+        potionLevel[cp] = 0;
+        QSkillLevel[cp] = 0;
+        WSkillLevel[cp] = 0;
     }
 }
 
