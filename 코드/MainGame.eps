@@ -109,6 +109,7 @@ function CharacterSelect() {
                         Utility.WipeScreen();
                         if (i == 0) {
                             printAt(10, "\x13루시안 칼츠가 선택되었습니다");
+                            PI.basicHp[cp] = 100;
                         }
                         else if (i == 1) {
                             printAt(10, "\x13보리스 진네만이 선택되었습니다");
@@ -169,7 +170,7 @@ function HandleUnitSpecificInput() {
     foreach (cp : EUDLoopPlayer(None, Force1)) {
         setcurpl(cp);
         const clickedPTR, clickedEPD = dwepdread_epd(EPD(0x6284E8) + 12*cp);// 유저가 선택한 유닛의 ptr과 epd
-
+	
         if(clickedPTR > 0){ //유닛을 클릭한 상태라면
             if (MemoryEPD(clickedEPD + 0x64/4, Exactly, 164) ) {//그 유닛이 디버깅 건물이라면
                 if (@KeyDown(cp,"X")) {
@@ -277,6 +278,17 @@ function Loop() {
     HuntStage();
 
     foreach (cp : EUDLoopPlayer(None,Force1)) {
+        //플레이어 유닛의 업그레이드에 따른 체력 증가
+        // SetMemory(0x662350 +  PI.class_id[cp] * 4, 7,  GC.classUnitBasicHp + 10*bread(0x58F332+cp*15));//유닛번호*?, ?, 더할값 
+        // SetMemory(0x662350 +  PI.class_id[cp] * 4, 7,  150);//
+        SetMemory(0x662350 + PI.class_id[cp] * 4, SetTo, (PI.basicHp[cp] + 10*bread(0x58F332+cp*15))*256);
+
+        // const s = StringBuffer(1024);
+        // setcurpl(0);
+        // s.print(10*bread(0x58F332+cp*15));
+        
+
+        //사냥 존에서 유닛들이 죽은 경우
         EUDSwitch(cp);
         foreach (i, group : py_enumerate(group_list)) {
             EUDSwitchCase()(i);
