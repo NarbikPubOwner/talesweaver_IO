@@ -33,11 +33,14 @@ const hunt_zone_list = EUDArray(list($L("p1_hunt_zone"), $L("p2_hunt_zone"), $L(
  * @param {any} ForPlayer 생성 된 유닛을 소유 할 플레이어
  * @param {any} UnitType 유닛의 종류 / 0 : 일반 적 유닛, 1 : 플레이어블 캐릭터 유닛, 2 : 보스 유닛
  * @param {any} GroupNum 어느 유닛 그룹에 속하는지 0~3 플레이어 사냥 존 / 4 보스존
+ * @param {any} Hp 현재 체력 설정
  */
 function CreateUnitBasic(Unit, Where : TrgLocation, ForPlayer, UnitType, GroupNum) {
     const epd = epdread_epd(EPD(0x628438));
     CreateUnit(1, Unit, Where, ForPlayer);
     Utility.SetUnitType(epd, UnitType);
+    // SetMemoryEPD(epd + 0x08/4, SetTo, dwread(0x662350 + 77 * 4)*256 );
+    
 
     EUDSwitch(GroupNum);
     foreach (i, group : py_enumerate(group_list)) {
@@ -109,7 +112,6 @@ function CharacterSelect() {
                         Utility.WipeScreen();
                         if (i == 0) {
                             printAt(10, "\x13루시안 칼츠가 선택되었습니다");
-                            PI.basicHp[cp] = 100;
                         }
                         else if (i == 1) {
                             printAt(10, "\x13보리스 진네만이 선택되었습니다");
@@ -279,14 +281,12 @@ function Loop() {
 
     foreach (cp : EUDLoopPlayer(None,Force1)) {
         //플레이어 유닛의 업그레이드에 따른 체력 증가
-        // SetMemory(0x662350 +  PI.class_id[cp] * 4, 7,  GC.classUnitBasicHp + 10*bread(0x58F332+cp*15));//유닛번호*?, ?, 더할값 
-        // SetMemory(0x662350 +  PI.class_id[cp] * 4, 7,  150);//
-        SetMemory(0x662350 + PI.class_id[cp] * 4, SetTo, (PI.basicHp[cp] + 10*bread(0x58F332+cp*15))*256);
+        // SetMemory(0x662350 + PI.class_id[cp] * 4, SetTo, (PI.basicHp[cp] + 10*bread(0x58F332+cp*15))*256);
+        // s.print(PI.class_id[cp]);
 
-        // const s = StringBuffer(1024);
-        // setcurpl(0);
-        // s.print(10*bread(0x58F332+cp*15));
-        
+        // SetMemory(0x662350 + PI.class_id[cp] * 4, SetTo, GC.playerbleUnitBasicHP*256);
+        // SetMemory(0x662350 + 77 * 4, 7, 100*256);
+       
 
         //사냥 존에서 유닛들이 죽은 경우
         EUDSwitch(cp);

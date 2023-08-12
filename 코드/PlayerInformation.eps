@@ -14,11 +14,10 @@ const potionLevel = PVariable();
 const QSkillLevel = PVariable();
 const WSkillLevel = PVariable();
 
-const basicHp = PVariable();
-
 function Init() {
     foreach (cp : EUDLoopPlayer(None, Force1)) {
-        class_id[cp] = 228;
+        // class_id[cp] = 228;
+        class_id[cp] = 77;
         hunt_zone_level[cp] = 0;
         hunt_zone_unit_count[cp] = 0;
 

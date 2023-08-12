@@ -29,17 +29,18 @@ function SetUnitType(epd, value) {
 
 /**
  * 유닛 타입을 정해서 유닛을 생성하는 기능, 1회 최대 생성개수는 1개로 고정 @tags
- * @param {any} Unit  베이스 유닛
- * @param {any} Where 생성위치 로케이션, $l("loc1") 형식으로 사용 해야함
- * @param {any} ForPlayer 생성 된 유닛을 소유 할 플레이어
- * @param {any} UnitType 유닛 타입 | 0:일반 유닛, 1:플레이어블 유닛, 2:보스 유닛
+//  * @param {any} Unit  베이스 유닛
+//  * @param {any} Where 생성위치 로케이션, $l("loc1") 형식으로 사용 해야함
+//  * @param {any} ForPlayer 생성 된 유닛을 소유 할 플레이어
+//  * @param {any} UnitType 유닛 타입 | 0:일반 유닛, 1:플레이어블 유닛, 2:보스 유닛
 
  */
-function CreateUnitCustom(Unit, Where : TrgLocation, ForPlayer, UnitType) {
-    const epd = epdread_epd(EPD(0x628438));
-    CreateUnit(1, Unit, Where, ForPlayer);
-    SetUnitType(epd, UnitType);
-}
+// function CreateUnitCustom(Unit, Where : TrgLocation, ForPlayer, UnitType) {
+//     const epd = epdread_epd(EPD(0x628438));
+//     CreateUnit(1, Unit, Where, ForPlayer);
+//     SetUnitType(epd, UnitType);
+//     SetMemoryEPD(epd + 0x08/4, SetTo, dwread(0x662350 + Unit * 4));
+// }
 
 function WipeScreenAll() {
     printAllAt(0," ");
