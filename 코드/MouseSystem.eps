@@ -1,0 +1,24 @@
+//Mouse Setting Option
+var mouseX			= 0; //마우스 상대좌표X (비공유)
+var mouseY			= 0; //마우스 상대좌표Y (비공유)
+const mouseMX		= EPD(0x6CDDC4); //마우스 상대좌표X 오프셋
+const mouseMY		= EPD(0x6CDDC8); //마우스 상대좌표Y 오프셋
+//MSQC를 통해 공유화될 변수들
+const mouseUserX	= PVariable(); //공유화된 마우스상대좌표X
+const mouseUserY	= PVariable(); //공유화된 마우스상대좌표Y
+const mouseClick	= PVariable(); //공유하된 마우스클릭상태
+
+//기타 변수
+
+function variableInit(){ //MSQC에서 사용하기 위해 변수등록(?)
+	EUDRegisterObjectToNamespace("mouseClick", mouseClick);
+	EUDRegisterObjectToNamespace("mouseUserX", mouseUserX);
+	EUDRegisterObjectToNamespace("mouseUserY", mouseUserY);
+}
+
+function checkScreenMouse(){
+    if(IsUserCP()){
+        mouseX = dwread_epd(mouseMX);
+        mouseY = dwread_epd(mouseMY);
+    }
+}

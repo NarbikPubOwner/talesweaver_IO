@@ -11,22 +11,26 @@ import OpeningDirecting;
 import GameModeSelect;
 import GameDifficultySelect;
 import MainGame;
+import UnitSkillSystem;
+import MouseSystem;
+
+
 
 function onPluginStart() {//맵 실행시 한번만 실행
 	BGM.loadSound();
     SetMemory(0x5124F0, SetTo, 21);// 기본 배속, 약 48프레임당 1초
-	
+	MouseSystem.variableInit();
+
 	PI.Init();
 }
 
 function beforeTriggerExec() {//클래식 트리거 작동 전 실행(맵에 기본적으로 들어가있는 트리거들)
 
-	
-	
-	//BGM실행
+	//기본적으로 cp마다 실행해야 하는 거
 	foreach (cp : EUDLoopPlayer(None,Force1)) {
+		MouseSystem.checkScreenMouse();//마우스 좌표 가져오기
 		setcurpl(cp);
-        if (PI.bgmStatement[cp]) {
+        if (PI.bgmStatement[cp]) {//bgm 실행
             BGM.Play();
         }
     }
@@ -48,22 +52,17 @@ function beforeTriggerExec() {//클래식 트리거 작동 전 실행(맵에 기
 			GameDifficultySelect.Loop();
 			break;
 		case 4:
-			InitByModeAndDifficulty.Init();
-			break;
-		case 5:
 			MainGame.Loop();
-			
 			break;
-
 		default:
 			break;
 	}
+	UnitSkillSystem.runExecutors();
 	//C.	게임 모드 선택
 	//D.	게임 난이도 선택
 	//E.	캐릭터 선택
 	//F.	게임 시작
 	//
-	
 }
 
 function afterTriggerExec() {//클래식 트리거 이후 작동

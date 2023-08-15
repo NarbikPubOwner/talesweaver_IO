@@ -1,4 +1,4 @@
-
+import MouseSystem;
 
 /**
  * epd값의 유닛 타입을 반환 @tags
@@ -18,12 +18,24 @@ function SetUnitType(epd, value) {
     bwrite_epd(epd+0x024/4, 2, value);
 }
 
-// function GetUnitGroup(epd) {
-//     return bread_epd(epd+0x064/4, 2);
-// }
-// function SetUnitGroup(epd, value) {
-//     bwrite_epd(epd+0x064/4, 2, value);
-// }
+function GetUnitGroup(epd) {
+    return bread_epd(epd+0x064/4, 0);
+}
+
+function getCurPositionXYEPD(epd) {
+    return wread_epd(epd+0x28/4,0), wread_epd(epd+0x28/4,2);
+}
+
+function calDest(epd, moveDistance) {
+    const mouse_x = MouseSystem.mouse;
+    const mouse_y = MouseSystem.mouseY;
+    const caster_x, caster_y = getCurPositionXYEPD(epd);//시전자 현재 위치
+    const x, y = mouse_x - caster_x, mouse_y - caster_y;
+    const angle = atan2(y, x);//결과값 360을 기준으로 나옴
+    const dx, dy = lengthdir(moveDistance, angle);//길이, 각도
+    
+    // retrun lengthdir(moveDistance, angle);
+}
 
 
 

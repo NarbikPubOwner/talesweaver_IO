@@ -3,6 +3,8 @@ import Utility;
 import GameInformation as GI;
 import GlobalConstant as GC;
 import PlayerInformation as PI;
+import UnitSkillSystem;
+import MouseSystem;
 
 const s = StringBuffer();
 
@@ -39,8 +41,6 @@ function CreateUnitBasic(Unit, Where : TrgLocation, ForPlayer, UnitType, GroupNu
     const epd = epdread_epd(EPD(0x628438));
     CreateUnit(1, Unit, Where, ForPlayer);
     Utility.SetUnitType(epd, UnitType);
-    // SetMemoryEPD(epd + 0x08/4, SetTo, dwread(0x662350 + 77 * 4)*256 );
-    
 
     EUDSwitch(GroupNum);
     foreach (i, group : py_enumerate(group_list)) {
@@ -50,6 +50,63 @@ function CreateUnitBasic(Unit, Where : TrgLocation, ForPlayer, UnitType, GroupNu
     }
     EUDEndSwitch();
 }
+
+function playerbleCharacaterSkill(e : UnitSkillSystem.Executor) {
+	const unitType = Utility.GetUnitGroup(e.casterEpd);
+    
+    switch (unitType) {
+        case GC.루시안_unit_type:
+            switch (e.skillNum) {
+                case 4:
+                    
+                    break;
+                case 5:
+                    
+                    break;
+                case 6:
+                    if (e.timer == 0) {
+                        setcurpl(e.casterPlayer);
+                        s.print("루시안 구르기");
+                        s.print(MouseSystem.mouseX);
+                        s.print(MouseSystem.mouseY);
+                        //두 점간의 거리와 각도 뱉어내기?
+                        // cal_dest(e);
+                    }
+
+                    if (bread_epd(e.casterEpd + 0x4C/4, 1) == 0) {//시전자가 죽은 경우
+                        return false;
+                    }
+                    switch (e.timer) {
+                    case 0:
+                        break;
+                    case 1:
+                        break;
+                    case 2:
+                        break;
+                    case 3:
+                        break;
+                    case 4:
+                        break;
+                    case 5:
+                        return false;
+                    }
+                    break;
+                case 7:
+                    
+                    break;
+                case 8:
+                    
+                    break;
+                case 9:
+                    
+                    break;
+            }
+            break;
+    }
+    return true;
+}
+
+
 
 function CharacterSelect() {
     if (CharacterSelect_loop_flag == true) {
@@ -172,9 +229,51 @@ function HandleUnitSpecificInput() {
     foreach (cp : EUDLoopPlayer(None, Force1)) {
         setcurpl(cp);
         const clickedPTR, clickedEPD = dwepdread_epd(EPD(0x6284E8) + 12*cp);// 유저가 선택한 유닛의 ptr과 epd
-	
-        if(clickedPTR > 0){ //유닛을 클릭한 상태라면
-            if (MemoryEPD(clickedEPD + 0x64/4, Exactly, 164) ) {//그 유닛이 디버깅 건물이라면
+    
+        if(clickedPTR > 0 && bread_epd(clickedEPD + 0x4C/4, 0) == cp){ //유닛을 클릭한 상태라면
+            if (MemoryEPD(clickedEPD + 0x64/4, Exactly, PI.class_id[cp])) {//플레이어블 유닛
+                if (MemoryEPD(clickedEPD + 0x98/4, Exactly, GC.buttonId[0]*65536)) {
+                    setcurpl(cp);
+                    s.print("1번 버튼 실행");
+                }
+                else if (MemoryEPD(clickedEPD + 0x98/4, Exactly, GC.buttonId[1]*65536)) {
+                    setcurpl(cp);
+                    s.print("2번 버튼 실행");
+                }
+                else if (MemoryEPD(clickedEPD + 0x98/4, Exactly, GC.buttonId[2]*65536)) {
+                    setcurpl(cp);
+                    s.print("3번 버튼 실행");
+                }
+                else if (MemoryEPD(clickedEPD + 0x98/4, Exactly, GC.buttonId[3]*65536)) {//Q
+                    setcurpl(cp);
+                    s.print("4번 버튼 실행");
+                }
+                else if (MemoryEPD(clickedEPD + 0x98/4, Exactly, GC.buttonId[4]*65536)) {//W
+                    setcurpl(cp);
+                    s.print("5번 버튼 실행");
+                }
+                else if (MemoryEPD(clickedEPD + 0x98/4, Exactly, GC.buttonId[5]*65536)) {//E
+                    UnitSkillSystem.addExecutor(cp, clickedEPD, 6, f_playerbleCharacaterSkill);
+                }
+                else if (MemoryEPD(clickedEPD + 0x98/4, Exactly, GC.buttonId[6]*65536)) {//R
+                    setcurpl(cp);
+                    s.print("7번 버튼 실행");
+                }
+                else if (MemoryEPD(clickedEPD + 0x98/4, Exactly, GC.buttonId[7]*65536)) {//T
+                    setcurpl(cp);
+                    s.print("8번 버튼 실행");
+                }
+                else if (MemoryEPD(clickedEPD + 0x98/4, Exactly, GC.buttonId[8]*65536)) {//Space
+                    setcurpl(cp);
+                    s.print("9번 버튼 실행");
+                }
+                wwrite_epd(clickedEPD+0x98/4,0, $U("Terran Marine")); // 첫 슬롯에 단일스킬
+                wwrite_epd(clickedEPD+0x98/4,2, 228); // 두번째 슬롯 비우기
+                wwrite_epd(clickedEPD+0x9C/4,0, 228); // 세번째
+                wwrite_epd(clickedEPD+0x9C/4,2, 228); // 네번째
+                wwrite_epd(clickedEPD+0xA0/4,0, 228); // 다섯번째
+            }
+            if (MemoryEPD(clickedEPD + 0x64/4, Exactly, 164) ) {//
                 if (@KeyDown(cp,"X")) {
                     //보스스테이지일때만
                     EUDSwitch(cp);
@@ -218,7 +317,7 @@ function HandleUnitSpecificInput() {
                     }
                 }
             }
-            if (MemoryEPD(clickedEPD + 0x64/4, Exactly, 155) ) {//그 유닛이 사냥터 관리 건물이라면
+            if (MemoryEPD(clickedEPD + 0x64/4, Exactly, 155) ) {//
                 if (@KeyDown(cp,"Q")) {
                     if (PI.hunt_zone_level[cp] > PI.hunt_zone_level_min) {
                         printAll("사냥터 레벨 감소");
@@ -275,18 +374,20 @@ function HuntStage() {
 }
 
 function Loop() {
+    
     CharacterSelect();
     HandleUnitSpecificInput();
     HuntStage();
-
+    
     foreach (cp : EUDLoopPlayer(None,Force1)) {
+        
         //플레이어 유닛의 업그레이드에 따른 체력 증가
-        // SetMemory(0x662350 + PI.class_id[cp] * 4, SetTo, (PI.basicHp[cp] + 10*bread(0x58F332+cp*15))*256);
-        // s.print(PI.class_id[cp]);
-
-        // SetMemory(0x662350 + PI.class_id[cp] * 4, SetTo, GC.playerbleUnitBasicHP*256);
-        // SetMemory(0x662350 + 77 * 4, 7, 100*256);
-       
+        const hpUgradeLevelInDat = bread(0x58F332+cp*15);
+        if (hpUgradeLevelInDat != PI.hPUpgradeLevel[cp]) {
+            SetMemory(0x662350 + PI.class_id[cp] * 4, Add,  5*256);
+            PI.hPUpgradeLevel[cp]++;
+        }
+        
 
         //사냥 존에서 유닛들이 죽은 경우
         EUDSwitch(cp);

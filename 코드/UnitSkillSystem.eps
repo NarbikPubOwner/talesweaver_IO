@@ -1,0 +1,55 @@
+// 첫 콜백 함수, 마지막 콜백 함수
+var executorHead, executorTail;
+
+// 기본 구조체
+object Executor {
+    //기본 데이터
+    var next: selftype;  // 다음에 실행할 콜백 함수
+    var timer;  // 타이머 변수. 0에서 시작해서 매 프레임마다 1씩 증가함.
+    var callback: EUDFuncPtr(1, 1);  // 실제로 실행할 함수
+    //추가 데이터
+    var casterPlayer;
+    var casterEpd;
+    var skillNum;
+    
+};
+
+// 콜백 함수 추가하기
+function addExecutor(casterPlayer, casterEpd, skillNum, callback: EUDFuncPtr(1, 1)) {
+    const e = Executor.alloc();
+    e.callback = callback;
+    e.timer = 0;  // 처음 등록하면 타이머 0 부터 시작
+    e.casterEpd = casterEpd;
+    e.casterPlayer = casterPlayer;
+    e.skillNum = skillNum;
+    
+    if (!executorHead) executorHead = e;
+    if (executorTail) Executor.cast(executorTail).next = e;
+    executorTail = e;
+    e.next = 0;
+}
+
+// 모든 콜백 함수들 실행하는 함수. 항상 1번만 호출하세요.
+function runExecutors() {
+    var executor = executorHead;
+    var ePrev = 0;
+
+    while(executor) {
+        const e = Executor.cast(executor);
+        const ret = e.callback(e);
+        const eNext = e.next;
+
+        if(!ret) {
+            if (e == executorTail) executorTail = ePrev;
+            if (ePrev) Executor.cast(ePrev).next = eNext;
+            else executorHead = eNext;
+            Executor.free(e);
+            executor = eNext;
+        }
+        else {
+            e.timer += 1;  // 타이머 증가
+            ePrev = executor;
+            executor = eNext;
+        }
+    }
+}

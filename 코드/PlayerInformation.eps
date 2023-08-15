@@ -14,6 +14,8 @@ const potionLevel = PVariable();
 const QSkillLevel = PVariable();
 const WSkillLevel = PVariable();
 
+const hPUpgradeLevel = PVariable();
+
 function Init() {
     foreach (cp : EUDLoopPlayer(None, Force1)) {
         // class_id[cp] = 228;
@@ -25,6 +27,7 @@ function Init() {
         potionLevel[cp] = 0;
         QSkillLevel[cp] = 0;
         WSkillLevel[cp] = 0;
+        // hPUpgradeLevel[cp]
     }
 }
 
