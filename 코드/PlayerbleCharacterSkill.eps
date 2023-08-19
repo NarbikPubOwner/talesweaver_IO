@@ -1,0 +1,155 @@
+import UnitSkillSystem;
+import Utility;
+import GlobalConstant as GC;
+import MouseSystem;
+import PlayerInformation as PI;
+
+const s = StringBuffer(1000);
+
+
+//캐릭터 바라보는 방향 수정
+function lookDir(executor) {
+    const e = UnitSkillSystem.Executor.cast(executor);
+    bwrite_epd(e.casterEpd+0x20/4, 0, 18);
+    switch (e.angle/45) {
+        case 0:
+            bwrite_epd(e.casterEpd+0x20/4, 1, 64); // 캐릭터의 바라보는 방향 수정
+            break;
+        case 1:
+            bwrite_epd(e.casterEpd+0x20/4, 1, 95); // 캐릭터의 바라보는 방향 수정
+            break;
+        case 2:
+            bwrite_epd(e.casterEpd+0x20/4, 1, 128); // 캐릭터의 바라보는 방향 수정
+            break;
+        case 3:
+            bwrite_epd(e.casterEpd+0x20/4, 1, 161); // 캐릭터의 바라보는 방향 수정
+            break;
+        case 4:
+            bwrite_epd(e.casterEpd+0x20/4, 1, 192); // 캐릭터의 바라보는 방향 수정
+            break;
+        case 5:
+            bwrite_epd(e.casterEpd+0x20/4, 1, 223); // 캐릭터의 바라보는 방향 수정
+            break;
+        case 6:
+            bwrite_epd(e.casterEpd+0x20/4, 1, 0); // 캐릭터의 바라보는 방향 수정
+            break;
+        case 7:
+            bwrite_epd(e.casterEpd+0x20/4, 1, 33); // 캐릭터의 바라보는 방향 수정
+            break;
+        case 8:
+            bwrite_epd(e.casterEpd+0x20/4, 1, 0); // 캐릭터의 바라보는 방향 수정
+            break;
+    }
+}
+
+//e에 저장된 이동거리 및 방향 기반으로 무브
+function move(executor) {
+    const e = UnitSkillSystem.Executor.cast(executor);
+    const caster_x, caster_y = Utility.getCurPositionXYEPD(e.casterEpd);//시전자 현재 위치
+    setloc("Loc1",caster_x,caster_y);
+    setloc("Loc2",caster_x+e.dx,caster_y+e.dy);
+    MoveUnit(1, Utility.GetUnitGroup(e.casterEpd), e.casterPlayer, "Loc1", "Loc2");
+}
+
+//다음 이동거리 및 방향 계산
+function calDestForMoving(executor, moveDistance) {
+    const e = UnitSkillSystem.Executor.cast(executor);
+    const mouse_x = MouseSystem.mouseX + MouseSystem.screen_x;
+    const mouse_y = MouseSystem.mouseY + MouseSystem.screen_y;
+    const caster_x, caster_y = Utility.getCurPositionXYEPD(e.casterEpd);//시전자 현재 위치
+    const x, y = mouse_x - caster_x, mouse_y - caster_y;
+    e.angle = atan2(y, x);//결과값 360을 기준으로 나옴
+    e.dx, e.dy = lengthdir(moveDistance, e.angle);//길이, 각도에 따라 다음 이동 좌표 오프셋 dx,dy 반환
+}
+
+function impl(e : UnitSkillSystem.Executor) {
+	const unitType = Utility.GetUnitGroup(e.casterEpd);
+    
+    switch (unitType) {
+        case GC.루시안_unit_type:
+            switch (e.skillNum) {
+                case 4:
+                    
+                    break;
+                case 5:
+                    
+                    break;
+                case 6:
+                    if (e.timer == 0) {
+                        setcurpl(e.casterPlayer);
+                        calDestForMoving(e, 32);
+                        s.print("루시안 구르기");
+                    }
+                    if (bread_epd(e.casterEpd + 0x4C/4, 1) == 0) {//시전자가 죽은 경우
+
+                    }
+                    else if (e.timer >= 1 && e.timer <= 5) {
+                        move(e);
+                        lookDir(e);
+                        const x,y = Utility.getCurPositionXYEPD(e.casterEpd);
+                        setloc("Loc1",x,y);
+                        SetMemoryX(0x666458, SetTo, 557, 0xFFFF); // 스캐너 스윕 이미지 변경
+                        CreateUnit(1, "Scanner Sweep", "Loc1", e.casterPlayer);
+                        RemoveUnit("Scanner Sweep", e.casterPlayer);
+                    }
+                    else if(e.timer > 8){
+                        PI.EskillCanUseFlag[e.casterPlayer] = true;
+                        return false;
+                    }
+                    break;
+                case 7:
+                    
+                    break;
+                case 8:
+                    
+                    break;
+                case 9:
+                    
+                    break;
+            }
+            break;
+        case GC.보리스_unit_type:
+            switch (e.skillNum) {
+                case 4:
+                    
+                    break;
+                case 5:
+                    
+                    break;
+                case 6:
+                    if (e.timer == 0) {
+                        setcurpl(e.casterPlayer);
+                        // calDestForMoving(e, 32);
+                        s.print("보리스 구르기");
+                    }
+                    if (bread_epd(e.casterEpd + 0x4C/4, 1) == 0) {//시전자가 죽은 경우
+
+                    }
+                    else if (e.timer >= 1 && e.timer <= 5) {
+                        move(e);
+                        lookDir(e);
+                        const x,y = Utility.getCurPositionXYEPD(e.casterEpd);
+                        setloc("Loc1",x,y);
+                        SetMemoryX(0x666458, SetTo, 557, 0xFFFF); // 스캐너 스윕 이미지 변경
+                        CreateUnit(1, "Scanner Sweep", "Loc1", e.casterPlayer);
+                        RemoveUnit("Scanner Sweep", e.casterPlayer);
+                    }
+                    else if(e.timer > 8){
+                        PI.EskillCanUseFlag[e.casterPlayer] = true;
+                        return false;
+                    }
+                    break;
+                case 7:
+                    
+                    break;
+                case 8:
+                    
+                    break;
+                case 9:
+                    
+                    break;
+            }
+            break;
+    }
+    return true;
+}

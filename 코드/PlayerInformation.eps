@@ -4,6 +4,9 @@ const bgmIndex = PVariable(); // [0,0,0,0,0,0,0,0];
 const bgmStatement = PVariable(); // BGM 상태 [0,0,0,0,0,0,0,0];
 
 const class_id = PVariable();
+const QskillCanUseFlag = PVariable();
+const EskillCanUseFlag = PVariable();
+
 const hunt_zone_level = PVariable();
 const hunt_zone_level_max = 10;
 const hunt_zone_level_min = 0;
@@ -13,13 +16,14 @@ const hpLevel = PVariable();
 const potionLevel = PVariable();
 const QSkillLevel = PVariable();
 const WSkillLevel = PVariable();
-
 const hPUpgradeLevel = PVariable();
 
 function Init() {
     foreach (cp : EUDLoopPlayer(None, Force1)) {
-        // class_id[cp] = 228;
-        class_id[cp] = 77;
+        class_id[cp] = 228;
+        QskillCanUseFlag[cp] = true;
+        EskillCanUseFlag[cp] = true;
+
         hunt_zone_level[cp] = 0;
         hunt_zone_unit_count[cp] = 0;
 
@@ -27,7 +31,6 @@ function Init() {
         potionLevel[cp] = 0;
         QSkillLevel[cp] = 0;
         WSkillLevel[cp] = 0;
-        // hPUpgradeLevel[cp]
     }
 }
 

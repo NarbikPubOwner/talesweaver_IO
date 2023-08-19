@@ -5,6 +5,7 @@ import GlobalConstant as GC;
 import PlayerInformation as PI;
 import UnitSkillSystem;
 import MouseSystem;
+import PlayerbleCharacterSkill;
 
 const s = StringBuffer();
 
@@ -49,64 +50,8 @@ function CreateUnitBasic(Unit, Where : TrgLocation, ForPlayer, UnitType, GroupNu
         break;
     }
     EUDEndSwitch();
-}
-
-function playerbleCharacaterSkill(e : UnitSkillSystem.Executor) {
-	const unitType = Utility.GetUnitGroup(e.casterEpd);
     
-    switch (unitType) {
-        case GC.루시안_unit_type:
-            switch (e.skillNum) {
-                case 4:
-                    
-                    break;
-                case 5:
-                    
-                    break;
-                case 6:
-                    if (e.timer == 0) {
-                        setcurpl(e.casterPlayer);
-                        s.print("루시안 구르기");
-                        s.print(MouseSystem.mouseX);
-                        s.print(MouseSystem.mouseY);
-                        //두 점간의 거리와 각도 뱉어내기?
-                        // cal_dest(e);
-                    }
-
-                    if (bread_epd(e.casterEpd + 0x4C/4, 1) == 0) {//시전자가 죽은 경우
-                        return false;
-                    }
-                    switch (e.timer) {
-                    case 0:
-                        break;
-                    case 1:
-                        break;
-                    case 2:
-                        break;
-                    case 3:
-                        break;
-                    case 4:
-                        break;
-                    case 5:
-                        return false;
-                    }
-                    break;
-                case 7:
-                    
-                    break;
-                case 8:
-                    
-                    break;
-                case 9:
-                    
-                    break;
-            }
-            break;
-    }
-    return true;
 }
-
-
 
 function CharacterSelect() {
     if (CharacterSelect_loop_flag == true) {
@@ -253,7 +198,7 @@ function HandleUnitSpecificInput() {
                     s.print("5번 버튼 실행");
                 }
                 else if (MemoryEPD(clickedEPD + 0x98/4, Exactly, GC.buttonId[5]*65536)) {//E
-                    UnitSkillSystem.addExecutor(cp, clickedEPD, 6, f_playerbleCharacaterSkill);
+                    if (PI.EskillCanUseFlag[cp]) UnitSkillSystem.addExecutor(cp, clickedEPD, 6, PlayerbleCharacterSkill.f_impl);
                 }
                 else if (MemoryEPD(clickedEPD + 0x98/4, Exactly, GC.buttonId[6]*65536)) {//R
                     setcurpl(cp);
