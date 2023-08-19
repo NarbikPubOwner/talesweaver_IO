@@ -54,12 +54,18 @@ function move(executor) {
 //다음 이동거리 및 방향 계산
 function calDestForMoving(executor, moveDistance) {
     const e = UnitSkillSystem.Executor.cast(executor);
-    const mouse_x = MouseSystem.mouseX + MouseSystem.screen_x;
-    const mouse_y = MouseSystem.mouseY + MouseSystem.screen_y;
-    const caster_x, caster_y = Utility.getCurPositionXYEPD(e.casterEpd);//시전자 현재 위치
-    const x, y = mouse_x - caster_x, mouse_y - caster_y;
+    const mouseX, mouseY = getlocTL($L("Mouse1") + e.casterPlayer);
+    const casterX, casterY = Utility.getCurPositionXYEPD(e.casterEpd);//시전자 현재 위치
+    const x, y = mouseX - casterX, mouseY - casterY;
     e.angle = atan2(y, x);//결과값 360을 기준으로 나옴
     e.dx, e.dy = lengthdir(moveDistance, e.angle);//길이, 각도에 따라 다음 이동 좌표 오프셋 dx,dy 반환
+    // const e = UnitSkillSystem.Executor.cast(executor);
+    // const mouse_x = MouseSystem.mouseUserX[e.casterEpd] + MouseSystem.screenUserX[e.casterEpd];
+    // const mouse_y = MouseSystem.mouseUserY[e.casterEpd] + MouseSystem.screenUserY[e.casterEpd];
+    // const caster_x, caster_y = Utility.getCurPositionXYEPD(e.casterEpd);//시전자 현재 위치
+    // const x, y = mouse_x - caster_x, mouse_y - caster_y;
+    // e.angle = atan2(y, x);//결과값 360을 기준으로 나옴
+    // e.dx, e.dy = lengthdir(moveDistance, e.angle);//길이, 각도에 따라 다음 이동 좌표 오프셋 dx,dy 반환
 }
 
 function impl(e : UnitSkillSystem.Executor) {
@@ -119,7 +125,7 @@ function impl(e : UnitSkillSystem.Executor) {
                 case 6:
                     if (e.timer == 0) {
                         setcurpl(e.casterPlayer);
-                        // calDestForMoving(e, 32);
+                        calDestForMoving(e, 32);
                         s.print("보리스 구르기");
                     }
                     if (bread_epd(e.casterEpd + 0x4C/4, 1) == 0) {//시전자가 죽은 경우

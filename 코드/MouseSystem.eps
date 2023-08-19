@@ -1,3 +1,70 @@
+//Mouse Setting Option
+var screenGridX		= 0; //화면 X좌표 (비공유)
+var screenGridY		= 0; //화면 Y좌표 (비공유)
+var screenSizeX		= 0; //화면X축 크기 (비공유)
+var screenSizeY		= 0; //화면Y축 크기 (비공유)
+var mouseX			= 0; //마우스 상대좌표X (비공유)
+var mouseY			= 0; //마우스 상대좌표Y (비공유)
+const mouseMX		= EPD(0x6CDDC4); //마우스 상대좌표X 오프셋
+const mouseMY		= EPD(0x6CDDC8); //마우스 상대좌표Y 오프셋
+
+var readMode = 1; //0이면 작동안함, 1이면 작동함
+const mouseUserX = PVariable(); //공유화된 마우스상대좌표X
+const mouseUserY = PVariable(); //공유화된 마우스상대좌표Y
+const screenUserX = PVariable(); //공유화된 화면X축 크기
+const screenUserY = PVariable(); //공유화된 화면X축 크기
+
+function variableInit(){ //MSQC에서 사용하기 위해 변수등록(?)
+	EUDRegisterObjectToNamespace("readMode", readMode);
+    EUDRegisterObjectToNamespace("mouseUserX", mouseUserX);
+    EUDRegisterObjectToNamespace("mouseUserY", mouseUserY);
+    EUDRegisterObjectToNamespace("screenUserX", screenUserX);
+    EUDRegisterObjectToNamespace("screenUserY", screenUserY);
+}
+
+function setMousetXY(){
+    if(IsUserCP()){
+        mouseX = dwread_epd(mouseMX);
+        mouseY = dwread_epd(mouseMY);
+        screenGridX = dwread_epd(EPD(0x62848C));
+        screenGridY = dwread_epd(EPD(0x6284A8));
+        const ScreenX2 = dwread_epd(EPD(0x62848C));
+        const ScreenY2 = dwread_epd(EPD(0x6284A8));
+        screenSizeX = 256*16 - ScreenX2;
+        screenSizeY = 256*16 - ScreenY2;
+        const screenX = screenGridX + screenSizeX;
+        const screenY = screenGridY + screenSizeY;
+    }
+}
+// const SCREEN_X = EPD(0x628448);
+// const SCREEN_Y = EPD(0x628470);
+// var screen_x;
+// var screen_y;
+
+// const MOUSE_X = EPD(0x6CDDC4);
+// const MOUSE_Y = EPD(0x6CDDC8);
+// var mouseX;
+// var mouseY;
+
+// function checkScreenMouse() {
+//     const CheckScreenX = MemoryXEPD(SCREEN_X, Exactly, 0, 0x1FFF);const CheckScreenY = MemoryXEPD(SCREEN_Y, Exactly, 0, 0x1FFF);
+//     if (!(CheckScreenX && CheckScreenY)) {
+//         screen_x = maskread_epd(SCREEN_X, 0x1FFF);screen_y = maskread_epd(SCREEN_Y, 0x1FFF);
+//         const operations = list(EPD(CheckScreenX) + 2, SetTo, screen_x),
+//         list(EPD(CheckScreenY) + 2, SetTo, screen_y);
+//         SeqCompute(operations);
+//     }
+//     const CheckMouseX = MemoryXEPD(MOUSE_X, Exactly, 0, 0x1FFF);
+//     const CheckMouseY = MemoryXEPD(MOUSE_Y, Exactly, 0, 0x1FFF);
+//     if (!(CheckMouseX && CheckMouseY)) {
+//         mouseX = maskread_epd(MOUSE_X, 0x3FF);
+//         mouseY = maskread_epd(MOUSE_Y, 0x3FF);
+//         const operations = list(EPD(CheckScreenX) + 2, SetTo, screen_x),
+//         list(EPD(CheckScreenY) + 2, SetTo, screen_y);
+//         SeqCompute(operations);
+//     }
+// }
+
 // //Mouse Setting Option
 // var mouseX			= 0; //마우스 상대좌표X (비공유) - 유저 스크린 기준
 // var mouseY			= 0; //마우스 상대좌표Y (비공유)
@@ -13,36 +80,6 @@
 //     mouseX = dwread_epd(mouseMX) + screenGridX;
 //     mouseY = dwread_epd(mouseMY) + screenGridY;
 // }
-
-
-const SCREEN_X = EPD(0x628448);
-const SCREEN_Y = EPD(0x628470);
-var screen_x;
-var screen_y;
-
-const MOUSE_X = EPD(0x6CDDC4);
-const MOUSE_Y = EPD(0x6CDDC8);
-var mouseX;
-var mouseY;
-
-function checkScreenMouse() {
-    const CheckScreenX = MemoryXEPD(SCREEN_X, Exactly, 0, 0x1FFF);const CheckScreenY = MemoryXEPD(SCREEN_Y, Exactly, 0, 0x1FFF);
-    if (!(CheckScreenX && CheckScreenY)) {
-        screen_x = maskread_epd(SCREEN_X, 0x1FFF);screen_y = maskread_epd(SCREEN_Y, 0x1FFF);
-        const operations = list(EPD(CheckScreenX) + 2, SetTo, screen_x),
-        list(EPD(CheckScreenY) + 2, SetTo, screen_y);
-        SeqCompute(operations);
-    }
-    const CheckMouseX = MemoryXEPD(MOUSE_X, Exactly, 0, 0x1FFF);
-    const CheckMouseY = MemoryXEPD(MOUSE_Y, Exactly, 0, 0x1FFF);
-    if (!(CheckMouseX && CheckMouseY)) {
-        mouseX = maskread_epd(MOUSE_X, 0x3FF);
-        mouseY = maskread_epd(MOUSE_Y, 0x3FF);
-        const operations = list(EPD(CheckScreenX) + 2, SetTo, screen_x),
-        list(EPD(CheckScreenY) + 2, SetTo, screen_y);
-        SeqCompute(operations);
-    }
-}
 
 
 
