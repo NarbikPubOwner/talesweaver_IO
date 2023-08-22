@@ -46,13 +46,16 @@ function beforeTriggerExec() {//클래식 트리거 작동 전 실행(맵에 기
 			break;
 		//오프닝 연출
 		case 1:
-			OpeningDirecting.Loop();
+			// OpeningDirecting.Loop();
+			GI.GameStepUpdate();
 			break;
 		case 2:
-			GameModeSelect.Loop();
+			// GameModeSelect.Loop();
+			GI.GameStepUpdate();
 			break;
 		case 3:
-			GameDifficultySelect.Loop();
+			// GameDifficultySelect.Loop();
+			GI.GameStepUpdate();
 			break;
 		case 4:
 			MainGame.Loop();

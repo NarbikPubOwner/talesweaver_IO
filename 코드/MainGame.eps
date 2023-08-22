@@ -6,6 +6,7 @@ import PlayerInformation as PI;
 import UnitSkillSystem;
 import MouseSystem;
 import PlayerbleCharacterSkill;
+import HuntZoneSystem;
 
 const s = StringBuffer();
 
@@ -262,27 +263,64 @@ function HandleUnitSpecificInput() {
                     }
                 }
             }
-            if (MemoryEPD(clickedEPD + 0x64/4, Exactly, 155) ) {//
-                if (@KeyDown(cp,"Q")) {
+            if (MemoryEPD(clickedEPD + 0x64/4, Exactly, 155)) {//플레이어블 유닛
+                if (MemoryEPD(clickedEPD + 0x98/4, Exactly, GC.buttonId[0]*65536)) {
+                    setcurpl(cp);
+                    
                     if (PI.hunt_zone_level[cp] > PI.hunt_zone_level_min) {
                         printAll("사냥터 레벨 감소");
                         PI.huntZoneLevelDecrease(cp);
-
+                        HuntZoneSystem.InitHuntZone(cp);
                     }
                     else {
                         println("사냥터 레벨이 이미 최하입니다");
                     }
                 }
-                else if (@KeyDown(cp,"W")) {
+                else if (MemoryEPD(clickedEPD + 0x98/4, Exactly, GC.buttonId[1]*65536)) {
+                    setcurpl(cp);
                     if (PI.hunt_zone_level[cp] < PI.hunt_zone_level_max) {
                         printAll("사냥터 레벨 증가");
                         PI.huntZoneLevelIncrease(cp);
+                        HuntZoneSystem.InitHuntZone(cp);
                     }
                     else {
                         println("사냥터 레벨이 이미 최대입니다");
                     }
                 }
+                else if (MemoryEPD(clickedEPD + 0x98/4, Exactly, GC.buttonId[2]*65536)) {
+                    setcurpl(cp);
+                    s.print("3번 버튼 실행");
+                }
+                else if (MemoryEPD(clickedEPD + 0x98/4, Exactly, GC.buttonId[3]*65536)) {//Q
+                    setcurpl(cp);
+                    s.print("4번 버튼 실행");
+                }
+                else if (MemoryEPD(clickedEPD + 0x98/4, Exactly, GC.buttonId[4]*65536)) {//W
+                    setcurpl(cp);
+                    s.print("5번 버튼 실행");
+                }
+                else if (MemoryEPD(clickedEPD + 0x98/4, Exactly, GC.buttonId[5]*65536)) {//E
+                    if (PI.EskillCanUseFlag[cp]) UnitSkillSystem.addExecutor(cp, clickedEPD, 6, PlayerbleCharacterSkill.f_impl);
+                }
+                else if (MemoryEPD(clickedEPD + 0x98/4, Exactly, GC.buttonId[6]*65536)) {//R
+                    setcurpl(cp);
+                    s.print("7번 버튼 실행");
+                }
+                else if (MemoryEPD(clickedEPD + 0x98/4, Exactly, GC.buttonId[7]*65536)) {//T
+                    setcurpl(cp);
+                    s.print("8번 버튼 실행");
+                }
+                else if (MemoryEPD(clickedEPD + 0x98/4, Exactly, GC.buttonId[8]*65536)) {//Space
+                    setcurpl(cp);
+                    s.print("9번 버튼 실행");
+                }
+                wwrite_epd(clickedEPD+0x98/4,0, $U("Terran Marine")); // 첫 슬롯에 단일스킬
+                wwrite_epd(clickedEPD+0x98/4,2, 228); // 두번째 슬롯 비우기
+                wwrite_epd(clickedEPD+0x9C/4,0, 228); // 세번째
+                wwrite_epd(clickedEPD+0x9C/4,2, 228); // 네번째
+                wwrite_epd(clickedEPD+0xA0/4,0, 228); // 다섯번째
             }
+           
         }
     }
 }

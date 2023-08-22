@@ -1,0 +1,20 @@
+import MainGame;
+import Utility;
+
+const s = StringBuffer(1000);
+
+function InitHuntZone(cp) {
+
+    
+    
+    EUDSwitch(cp);
+        foreach (i, group : py_enumerate(MainGame.group_list)) {
+            EUDSwitchCase()(i);
+            foreach(unit : group.cploop) {
+                s.printf("{}",Utility.GetUnitGroup(unit.epd));
+            }
+            break;
+        }
+    EUDEndSwitch();
+
+}
