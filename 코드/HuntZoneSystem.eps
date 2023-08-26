@@ -40,7 +40,8 @@ function HuntStageProgress() {
             } 
             isFirst = false;
         }
-        else {
+
+        if(isFirst == false) {
              //제한시간 구현 - StageTime
             SetCountdownTimer(SetTo, ((stageTimeLimit- huntStageTimer)/48) + 1);
             var unit_max = 0;
@@ -70,9 +71,29 @@ function HuntStageProgress() {
                         break;
                 }
             }
-            huntStageTimer+=1;
         }
-           
-       
+        if (stageTimeLimit <= huntStageTimer) {//제한 시간이 다 지나간 경우
+            GI.stageNum = 1;
+            SetCountdownTimer(SetTo, 0);
+            foreach (cp : EUDLoopPlayer(None,Force1)) {
+                InitHuntZone(cp);
+                EUDSwitch(cp);
+                foreach (i, group : py_enumerate(MainGame.group_list)) {
+                    EUDSwitchCase()(i);
+                        foreach(unit : group.cploop) {
+                            if (Utility.GetUnitType(unit.epd)==1 ) {
+                                MainGame.boss_zone.add(unit.epd);
+                                //실제 순간이동 코드 작성
+                                MoveUnit(1, Utility.GetUnitGroup(unit.epd), cp, "global_loc", "bossZoneTeleportation");
+                                unit.remove();
+                            }
+                        }
+                    break;
+                }
+                EUDEndSwitch();
+            }
+            isFirst = true;
+        }
+        huntStageTimer+=1;
     }
 }

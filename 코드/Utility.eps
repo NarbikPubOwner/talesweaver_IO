@@ -21,6 +21,10 @@ function GetUnitType(epd) {
     return bread_epd(epd+0x024/4, 2);
 }
 
+function SetPlayerId(epd, player) {
+    bwrite_epd(epd + 0x4C/4, 0, player);
+}
+
 function killUnitEPD(epd) {
     bwrite_epd(epd + 0x4C/4, 1, 0);
 }
