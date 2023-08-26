@@ -13,6 +13,7 @@ import GameDifficultySelect;
 import MainGame;
 import UnitSkillSystem;
 import MouseSystem;
+import CharacterSelectSystem;
 
 const s = StringBuffer(1000);
 
@@ -47,7 +48,7 @@ function beforeTriggerExec() {//클래식 트리거 작동 전 실행(맵에 기
 		//오프닝 연출
 		case 1:
 			// OpeningDirecting.Loop();
-			GI.GameStepUpdate();
+			GI.GameStepUpdate();//원래는 없어야 하는 부분
 			break;
 		case 2:
 			// GameModeSelect.Loop();
@@ -58,17 +59,16 @@ function beforeTriggerExec() {//클래식 트리거 작동 전 실행(맵에 기
 			GI.GameStepUpdate();
 			break;
 		case 4:
+			CharacterSelectSystem.Loop();
+			break;
+		case 5:
 			MainGame.Loop();
 			break;
 		default:
 			break;
 	}
 	UnitSkillSystem.runExecutors();
-	//C.	게임 모드 선택
-	//D.	게임 난이도 선택
-	//E.	캐릭터 선택
-	//F.	게임 시작
-	//
+
 }
 
 function afterTriggerExec() {//클래식 트리거 이후 작동

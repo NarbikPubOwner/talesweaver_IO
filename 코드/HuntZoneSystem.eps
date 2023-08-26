@@ -1,20 +1,78 @@
 import MainGame;
 import Utility;
+import PlayerInformation as PI;
+import GameInformation as GI;
 
 const s = StringBuffer(1000);
 
-function InitHuntZone(cp) {
+var huntStageTimer = 0;
+// const stageTimeLimit = EUDArray(list(5760, 5760, 5760, 5760, 5760, 5760, 5760, 5760, 5760, 5760, 5760, 5760, 5760, 5760));
+var stageTimeLimit = 0;
+var isFirst = true;
 
-    
-    
+function InitHuntZone(cp) {
     EUDSwitch(cp);
         foreach (i, group : py_enumerate(MainGame.group_list)) {
             EUDSwitchCase()(i);
             foreach(unit : group.cploop) {
-                s.printf("{}",Utility.GetUnitGroup(unit.epd));
+                if (Utility.GetUnitType(unit.epd) != 0) {
+                    continue;
+                }
+                
+                Utility.killUnitEPD(unit.epd);
+                
             }
+            
             break;
         }
     EUDEndSwitch();
+}
 
+function HuntStageProgress() {
+    if (GI.stageNum == 0) {
+        if (isFirst) {
+            huntStageTimer = 0;
+           if (GI.chapterNum == 0) {
+                stageTimeLimit = 5760;
+            }
+            else if(GI.chapterNum == 1) {
+                stageTimeLimit = 11520;
+            } 
+            isFirst = false;
+        }
+        else {
+             //제한시간 구현 - StageTime
+            SetCountdownTimer(SetTo, ((stageTimeLimit- huntStageTimer)/48) + 1);
+            var unit_max = 0;
+            foreach (cp : EUDLoopPlayer(None, Force1)) {
+                //킬 보상, 나중에 모든 종류의 유닛 순회 돌면서 체크하도록
+                const unit = 0;
+                const kill_count = dwread(0x5878A4 + cp*4 + unit*48);
+                if (kill_count > 0) {
+                    SetResources(cp, Add, 1*kill_count, Ore);
+                    SetMemory(0x5878A4 + cp*4 + unit*48, SetTo, 0);
+                }
+
+                switch (PI.hunt_zone_level[cp]) {
+                    case 0:
+                        
+                        break;
+                    case 1:
+                        if (GI.game_timer % 48 == 0) {
+                            unit_max = 10;
+                            if (PI.hunt_zone_unit_count[cp] < unit_max) {
+                                MainGame.CreateUnitBasic(0, MainGame.hunt_zone_list[cp], MainGame.enenmy_player, 0, cp);
+                            }
+                        }
+                        
+                        break;
+                    default:
+                        break;
+                }
+            }
+            huntStageTimer+=1;
+        }
+           
+       
+    }
 }

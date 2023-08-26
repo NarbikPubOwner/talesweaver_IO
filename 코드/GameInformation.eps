@@ -2,8 +2,11 @@
 const player_count = 4;
 var game_timer = 0;
 var game_step = 0;
+var stageNum = 0;//0 사냥 스테이지, 1 보스 스테이지
+var chapterNum = 0;
 var game_mode = 0;//0팀 플레이 1싱글 플레이
 var game_difficulty = 0;//0노말 1하드 2헬
+
 
 function GameTimerUpdate() {
 	game_timer += 1;

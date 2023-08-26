@@ -10,15 +10,7 @@ import HuntZoneSystem;
 
 const s = StringBuffer();
 
-var CharacterSelect_init_flag = true;
-var CharacterSelect_loop_flag = true;
-
 const enenmy_player = 4;
-
-const characterSelectCenter_x, characterSelectCenter_y = 3952, 1104;
-const normal_class_select_flag = EUDArray(list(true, true, true, true, true, true, true, true));//캐릭터 선택 가능 여부 배열
-const normal_class_select_x = EUDArray(list(3856,4048,4208,4208,4048,3856,3696,3696));
-const normal_class_select_y = EUDArray(list(848,848,1008,1200,1360,1360,1200,1008));
 
 const P1_hunt_zone = UnitGroup(1000);
 const P2_hunt_zone = UnitGroup(1000);
@@ -48,129 +40,12 @@ function CreateUnitBasic(Unit, Where : TrgLocation, ForPlayer, UnitType, GroupNu
     foreach (i, group : py_enumerate(group_list)) {
         EUDSwitchCase()(i);
         group.add(epd);
+        PI.hunt_zone_unit_count[GroupNum]++;
         break;
     }
     EUDEndSwitch();
-    
 }
 
-function CharacterSelect() {
-    if (CharacterSelect_loop_flag == true) {
-        //화면 고정
-        if (CharacterSelect_init_flag == true) {
-            
-            setloc("Loc1", characterSelectCenter_x, characterSelectCenter_y);//캐릭터 선택 존 중앙으로 로케 세팅
-            SetMemoryX(0x666458, SetTo, 391, 0xFFFF);
-            CreateUnit(1, "Scanner Sweep", "Loc1", P8);
-            foreach (cp : EUDLoopPlayer(None,Force1)) {
-                setcurpl(cp);
-                PlayWAV("staredit\\wav\\0103.WAV");
-            }
-            RemoveUnit("Scanner Sweep", P8);
-
-            foreach (cp : EUDLoopPlayer(None, Force1)) {
-                setcurpl(cp);
-                CenterView("Loc1");
-
-                CreateUnitWithProperties(1, GC.select_ticket_unit_type, "Loc1", cp, UnitProperty(invincible=True));
-            }
-
-            //플레이어 캐릭터 스테츄 생성
-            setloc("Loc1",3856, 816);
-            CreateUnitWithProperties(1, GC.루시안_unit_type, "Loc1", P8, UnitProperty(invincible=True));
-            setloc("Loc1",4048, 816);
-            CreateUnitWithProperties(1, GC.보리스_unit_type, "Loc1", P8, UnitProperty(invincible=True));
-            setloc("Loc1",4240, 1008);
-            CreateUnitWithProperties(1, GC.티치엘_unit_type, "Loc1", P8, UnitProperty(invincible=True));
-            setloc("Loc1",4240, 1200);
-            CreateUnitWithProperties(1, GC.밀라_unit_type, "Loc1", P8, UnitProperty(invincible=True));
-            setloc("Loc1",4048, 1392);
-            CreateUnitWithProperties(1, GC.이스핀_unit_type, "Loc1", P8, UnitProperty(invincible=True));
-            setloc("Loc1",3856, 1392);
-            CreateUnitWithProperties(1, GC.막시민_unit_type, "Loc1", P8, UnitProperty(invincible=True));
-            setloc("Loc1",3664, 1200);
-            CreateUnitWithProperties(1, GC.시벨린_unit_type, "Loc1", P8, UnitProperty(invincible=True));
-            setloc("Loc1",3664, 1008);
-            CreateUnitWithProperties(1, GC.나야트레이_unit_type, "Loc1", P8, UnitProperty(invincible=True));
-            
-            CharacterSelect_init_flag = false;
-        }
-
-        //일반 선택 부분
-        for (var i = 0; i < 8; i++) {
-            if (normal_class_select_flag[i] == true) {//해당 클래스 선택이 가능하다면
-                setloc("Loc1", normal_class_select_x[i], normal_class_select_y[i]);
-                RemoveUnit("Scanner Sweep", P8);
-                dilateloc("Loc1",16,16);
-                if (GI.game_timer % 24 == 0) {//선택 가능 표시 이펙트
-                    SetMemoryX(0x666458, SetTo, 213, 0xFFFF); // 스캐너 스윕 이미지 변경
-                    CreateUnit(1, "Scanner Sweep", "Loc1", P8);
-                    RemoveUnit("Scanner Sweep", P8);
-                }
-                foreach (cp : EUDLoopPlayer(None,Force1)) {
-                    if (Bring(cp, Exactly, 1, GC.select_ticket_unit_type, "Loc1")) {//cp가 티켓을 해당 위치에 가져왔다면
-                        normal_class_select_flag[i] = false;
-                        PI.class_id[cp] = GC.class_unit_type[i];
-                        setcurpl(cp);
-                        Utility.WipeScreen();
-                        if (i == 0) {
-                            printAt(10, "\x13루시안 칼츠가 선택되었습니다");
-                        }
-                        else if (i == 1) {
-                            printAt(10, "\x13보리스 진네만이 선택되었습니다");
-                        }
-                        else if (i == 2) {
-                            printAt(10, "\x13티치엘 쥬스피앙이 선택되었습니다");
-                        }
-                        else if (i == 3) {
-                            printAt(10, "\x13밀라 네브레스카가 선택되었습니다");
-                        }
-                        else if (i == 4) {
-                            printAt(10, "\x13이스핀 샤를이 선택되었습니다");
-                        }
-                        else if (i == 5) {
-                            printAt(10, "\x13막시민 리크프네가 선택되었습니다");
-                        }
-                        else if (i == 6) {
-                            printAt(10, "\x13시벨린 우가 선택되었습니다");
-                        }
-                        else if (i == 7) {
-                            printAt(10, "\x13나야트레이가 선택되었습니다");
-                        }
-                        KillUnit(GC.select_ticket_unit_type, cp);//시민 삭제
-                        PlayWAV("staredit\\wav\\0392.WAV");
-                        break;
-                    }
-                }
-            }
-        }
-
-        //모든 유저 선택 완료 체크
-        var all_user_select_flag = true;
-        foreach (cp : EUDLoopPlayer(None, Force1)) {
-            if (PI.class_id[cp] == 228) {
-                all_user_select_flag = false;
-            }
-        }
-        if (all_user_select_flag == true) {
-            //스테츄 전체 삭제
-            for (var i = 0; i < 8; i++) {
-                RemoveUnit(GC.class_unit_type[i], P8);
-            }
-            foreach (cp : EUDLoopPlayer(None, Force1)) {
-                setcurpl(cp);
-                setloc("Loc1", GC.hunt_zone_center_x[cp], GC.hunt_zone_center_y[cp]);
-                CenterView("Loc1");
-                CreateUnitBasic(PI.class_id[cp], "Loc1", cp, 1, cp);
-                SetMemoryX(0x666458, SetTo, 391, 0xFFFF);
-                CreateUnit(1, "Scanner Sweep", "Loc1", P8);
-                PlayWAV("staredit\\wav\\0103.WAV");
-                RemoveUnit("Scanner Sweep", P8);
-            }
-            CharacterSelect_loop_flag = false;
-        }
-    }
-}
 function HandleUnitSpecificInput() {
     foreach (cp : EUDLoopPlayer(None, Force1)) {
         setcurpl(cp);
@@ -271,6 +146,7 @@ function HandleUnitSpecificInput() {
                         printAll("사냥터 레벨 감소");
                         PI.huntZoneLevelDecrease(cp);
                         HuntZoneSystem.InitHuntZone(cp);
+                        
                     }
                     else {
                         println("사냥터 레벨이 이미 최하입니다");
@@ -300,7 +176,6 @@ function HandleUnitSpecificInput() {
                     s.print("5번 버튼 실행");
                 }
                 else if (MemoryEPD(clickedEPD + 0x98/4, Exactly, GC.buttonId[5]*65536)) {//E
-                    if (PI.EskillCanUseFlag[cp]) UnitSkillSystem.addExecutor(cp, clickedEPD, 6, PlayerbleCharacterSkill.f_impl);
                 }
                 else if (MemoryEPD(clickedEPD + 0x98/4, Exactly, GC.buttonId[6]*65536)) {//R
                     setcurpl(cp);
@@ -325,42 +200,11 @@ function HandleUnitSpecificInput() {
     }
 }
 
-function HuntStage() {
-    var unit_max = 0;
-    foreach (cp : EUDLoopPlayer(None, Force1)) {
-        //킬 보상, 나중에 모든 종류의 유닛 순회 돌면서 체크하도록
-        const unit = 0;
-        const kill_count = dwread(0x5878A4 + cp*4 + unit*48);
-        if (kill_count > 0) {
-            SetResources(cp, Add, 1*kill_count, Ore);
-            SetMemory(0x5878A4 + cp*4 + unit*48, SetTo, 0);
-        }
-
-        switch (PI.hunt_zone_level[cp]) {
-            case 0:
-                
-                break;
-            case 1:
-                if (GI.game_timer % 48 == 0) {
-                    unit_max = 10;
-                    if (PI.hunt_zone_unit_count[cp] < unit_max) {
-                        CreateUnitBasic(0, hunt_zone_list[cp], enenmy_player, 1, cp);
-                        PI.hunt_zone_unit_count[cp] += 1;
-                    }
-                }
-                
-                break;
-            default:
-                break;
-        }
-    }
-}
 
 function Loop() {
     
-    CharacterSelect();
     HandleUnitSpecificInput();
-    HuntStage();
+    HuntZoneSystem.HuntStageProgress();
     
     foreach (cp : EUDLoopPlayer(None,Force1)) {
         
@@ -370,7 +214,6 @@ function Loop() {
             SetMemory(0x662350 + PI.class_id[cp] * 4, Add,  5*256);
             PI.hPUpgradeLevel[cp]++;
         }
-        
 
         //사냥 존에서 유닛들이 죽은 경우
         EUDSwitch(cp);
