@@ -8,6 +8,7 @@ const buildingXYArr = EUDArray(list(EUDArray(list(1008,704)),EUDArray(list(2480,
 // const s = StringBuffer(1024);
 
 function Loop() {
+	Utility.SetLocLTRB($L("global_loc"),0,0,8192,8192);
 	//맵에 깔린 리빌러 삭제
 	if (RemoveRevealer_flag == true) {
 		RemoveUnit("Map Revealer", AllPlayers);
@@ -24,6 +25,8 @@ function Loop() {
 		CreateUnit(1, GC.BGMManageBuildingId, "Loc1", cp);
 
 	}
-
+	setloc("Loc1", 1120 , 1536);
+	CreateUnit(1, 114, "Loc1", 0);
+	
 	GI.GameStepUpdate();
 }

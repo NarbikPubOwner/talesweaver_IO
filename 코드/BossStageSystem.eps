@@ -1,0 +1,92 @@
+import MainGame;
+import Utility;
+import PlayerInformation as PI;
+import GameInformation as GI;
+import GlobalConstant as GC;
+
+const s =  StringBuffer(1000);
+var isFirst = true;
+var stageTimeLimit = 0;
+var stageTimer = 0;
+var bossEpd = 0;
+function BossStageProgress() {
+    if (GI.stageNum == 1) {
+        switch (GI.chapterNum) {
+            case 0:
+                if (isFirst) {
+                    bossEpd = MainGame.CreateUnitBasic(81, "boss_zone", GC.enemyPlayer, 2, 4);
+                    stageTimeLimit = 480;
+                    isFirst = false;
+                }
+                else {
+                    if(bread_epd(bossEpd + 0x4C/4, 1) == 0){
+                        //사냥 스테이지로 전환
+                        GI.stageNum = 0;
+                        GI.chapterNum++;
+                        foreach(unit : MainGame.boss_zone.cploop) {
+                            const epd = unit.epd;
+                            if (Utility.GetUnitType(epd)==1 ) {
+                            const groupNum = bread_epd(epd + 0x4C/4, 0);
+                            EUDSwitch(groupNum);
+                                foreach (i, group : py_enumerate(MainGame.group_list)) {
+                                    EUDSwitchCase()(i);
+                                        group.add(epd);
+                                        PI.hunt_zone_unit_count[groupNum]++;
+                                        setloc("Loc1", GC.hunt_zone_center_x[groupNum], GC.hunt_zone_center_y[groupNum]);
+                                        MoveUnit(1, Utility.GetUnitGroup(unit.epd), groupNum, "global_loc", "Loc1");
+                                        unit.remove();
+                                    break;
+                                }
+                            EUDEndSwitch();
+                            }
+                        }
+                        isFirst = true;
+                        stageTimer = 0;
+                    }
+                    else {
+                        SetCountdownTimer(SetTo, ((stageTimeLimit- stageTimer)/48) + 1);
+                        if (stageTimeLimit == stageTimer) {
+                            foreach (cp : EUDLoopPlayer(None,Force1)) {
+                                setcurpl(cp);
+                                Defeat();
+                            }
+                        }
+                        //시간 제한 처리
+                        //기타 동작 수행
+                    }
+                }
+                break;
+            case 1:
+                if (isFirst) {
+                    bossEpd = MainGame.CreateUnitBasic(81, "boss_zone", GC.enemyPlayer, 2, 4);
+                    stageTimeLimit = 480;
+                    isFirst = false;
+                }
+                else {
+                    if(bread_epd(bossEpd + 0x4C/4, 1) == 0){
+                        //유저 승리
+                        foreach (cp : EUDLoopPlayer(None,Force1)) {
+                            setcurpl(cp);
+                            Victory();
+                        }
+                    }
+                    else {
+                        SetCountdownTimer(SetTo, ((stageTimeLimit- stageTimer)/48) + 1);
+                        if (stageTimeLimit == stageTimer) {
+                            foreach (cp : EUDLoopPlayer(None,Force1)) {
+                                setcurpl(cp);
+                                Defeat();
+                            }
+                        }
+                        //시간 제한 처리
+                        //기타 동작 수행
+                    }
+                }
+                break;
+        
+            default:
+                break;
+        }
+        stageTimer++;
+    }
+}
