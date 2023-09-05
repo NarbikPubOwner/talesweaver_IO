@@ -19,7 +19,8 @@ const P3_hunt_zone = UnitGroup(1000);
 const P4_hunt_zone = UnitGroup(1000);
 const boss_zone = UnitGroup(1000);
 
-const group_list = list(P1_hunt_zone, P2_hunt_zone, P3_hunt_zone, P4_hunt_zone);
+const group_list = list(P1_hunt_zone, P2_hunt_zone, P3_hunt_zone, P4_hunt_zone, boss_zone);
+const huntZoneList = list(P1_hunt_zone, P2_hunt_zone, P3_hunt_zone, P4_hunt_zone);
 
 const hunt_zone_list = EUDArray(list($L("p1_hunt_zone"), $L("p2_hunt_zone"), $L("p3_hunt_zone"), $L("p4_hunt_zone"), $L("boss_zone")));
 
@@ -41,7 +42,12 @@ function CreateUnitBasic(Unit, Where : TrgLocation, ForPlayer, UnitType, GroupNu
     foreach (i, group : py_enumerate(group_list)) {
         EUDSwitchCase()(i);
         group.add(epd);
-        PI.hunt_zone_unit_count[GroupNum]++;
+        if (GroupNum != 4) {//사냥존에 생성하는 경우이면
+            if (bread_epd(epd + 0x4C/4, 0) == GC.enemyPlayer) {
+               PI.huntZoneEnemyCount[GroupNum]++; 
+            }            
+        }
+        
         break;
     }
     EUDEndSwitch();
@@ -185,29 +191,14 @@ function Loop() {
 
         //사냥 존에서 죽은 유닛 제거 및 최대치 조정
         EUDSwitch(cp);
-        foreach (i, group : py_enumerate(group_list)) {
+        foreach (i, group : py_enumerate(huntZoneList)) {
             EUDSwitchCase()(i);
             foreach(unit : group.cploop) {
                 const epd = unit.epd;
                 foreach(dead : unit.dying) {
-                    switch (Utility.GetUnitType(epd)) {
-                        case 0:
-                            break;
-                        case 1:
-                            //유저 사망 처리
-                            //
-                            break;
-                    
-                        default:
-                            printAll("좆돼쓰요");
-                            break;
+                    if (bread_epd(epd + 0x4C/4, 0) == GC.enemyPlayer) {
+                        PI.huntZoneEnemyCount[cp] -= 1;
                     }
-                    PI.hunt_zone_unit_count[cp] -= 1;
-                    // unit.move_cp(0x4C/4);
-                    // if (bread_cp(0, 0) == 4) {
-                    //     //유저 사망 처리 따로하기
-                    //     PI.hunt_zone_unit_count[cp] -= 1;
-                    // }
                 }
             }
             break;

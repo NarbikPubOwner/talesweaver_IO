@@ -2,6 +2,7 @@ import MainGame;
 import Utility;
 import PlayerInformation as PI;
 import GameInformation as GI;
+import GlobalConstant as GC;
 
 const s = StringBuffer(1000);
 
@@ -15,13 +16,12 @@ function InitHuntZone(cp) {
         foreach (i, group : py_enumerate(MainGame.group_list)) {
             EUDSwitchCase()(i);
             foreach(unit : group.cploop) {
-                if (Utility.GetUnitType(unit.epd) != 0) continue;
-                Utility.killUnitEPD(unit.epd);
-                PI.hunt_zone_unit_count[cp]--;
-                unit.remove();
-                
+                if (bread_epd(unit.epd + 0x4C/4, 0) == GC.enemyPlayer){
+                    Utility.killUnitEPD(unit.epd);
+                    PI.huntZoneEnemyCount[cp]--;
+                    unit.remove();
+                }
             }
-            
             break;
         }
     EUDEndSwitch();
@@ -60,7 +60,7 @@ function HuntStageProgress() {
                     case 1:
                         if (GI.game_timer % 48 == 0) {
                             unit_max = 10;
-                            if (PI.hunt_zone_unit_count[cp] < unit_max) {
+                            if (PI.huntZoneEnemyCount[cp] < unit_max) {
                                 MainGame.CreateUnitBasic(0, MainGame.hunt_zone_list[cp], MainGame.enenmy_player, 0, cp);
                             }
                         }

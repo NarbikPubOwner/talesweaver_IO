@@ -31,7 +31,6 @@ function BossStageProgress() {
                                 foreach (i, group : py_enumerate(MainGame.group_list)) {
                                     EUDSwitchCase()(i);
                                         group.add(epd);
-                                        PI.hunt_zone_unit_count[groupNum]++;
                                         setloc("Loc1", GC.hunt_zone_center_x[groupNum], GC.hunt_zone_center_y[groupNum]);
                                         MoveUnit(1, Utility.GetUnitGroup(unit.epd), groupNum, "global_loc", "Loc1");
                                         unit.remove();
