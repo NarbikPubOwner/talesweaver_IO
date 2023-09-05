@@ -188,11 +188,26 @@ function Loop() {
         foreach (i, group : py_enumerate(group_list)) {
             EUDSwitchCase()(i);
             foreach(unit : group.cploop) {
+                const epd = unit.epd;
                 foreach(dead : unit.dying) {
-                    unit.move_cp(0x4C/4);
-                    if (bread_cp(0, 0) == 4) {
-                        PI.hunt_zone_unit_count[cp] -= 1;
+                    switch (Utility.GetUnitType(epd)) {
+                        case 0:
+                            break;
+                        case 1:
+                            //유저 사망 처리
+                            //
+                            break;
+                    
+                        default:
+                            printAll("좆돼쓰요");
+                            break;
                     }
+                    PI.hunt_zone_unit_count[cp] -= 1;
+                    // unit.move_cp(0x4C/4);
+                    // if (bread_cp(0, 0) == 4) {
+                    //     //유저 사망 처리 따로하기
+                    //     PI.hunt_zone_unit_count[cp] -= 1;
+                    // }
                 }
             }
             break;
@@ -201,7 +216,7 @@ function Loop() {
         //보스 존에서 죽은 유닛 제거
         foreach(unit : boss_zone.cploop) {
             foreach(dead : unit.dying) {
-                //보스 데스 카운트 조절
+                //유저 사망 처리 따로하기
             }
         }
 

@@ -15,11 +15,10 @@ function InitHuntZone(cp) {
         foreach (i, group : py_enumerate(MainGame.group_list)) {
             EUDSwitchCase()(i);
             foreach(unit : group.cploop) {
-                if (Utility.GetUnitType(unit.epd) != 0) {
-                    continue;
-                }
-                
+                if (Utility.GetUnitType(unit.epd) != 0) continue;
                 Utility.killUnitEPD(unit.epd);
+                PI.hunt_zone_unit_count[cp]--;
+                unit.remove();
                 
             }
             
