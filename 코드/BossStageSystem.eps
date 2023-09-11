@@ -14,8 +14,8 @@ function BossStageProgress() {
         switch (GI.chapterNum) {
             case 0:
                 if (isFirst) {
-                    bossEpd = MainGame.CreateUnitBasic(81, "boss_zone", GC.enemyPlayer, 2, 4);
-                    stageTimeLimit = 480;
+                    bossEpd = MainGame.CreateUnitBasic(65, "boss_zone", GC.enemyPlayer, 2, 4);
+                    stageTimeLimit = 4800;
                     isFirst = false;
                 }
                 else {
@@ -58,7 +58,7 @@ function BossStageProgress() {
             case 1:
                 if (isFirst) {
                     bossEpd = MainGame.CreateUnitBasic(81, "boss_zone", GC.enemyPlayer, 2, 4);
-                    stageTimeLimit = 480;
+                    stageTimeLimit = 4800;
                     isFirst = false;
                 }
                 else {
