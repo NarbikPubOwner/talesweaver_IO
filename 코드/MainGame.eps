@@ -8,6 +8,7 @@ import MouseSystem;
 import PlayerbleCharacterSkill;
 import HuntZoneSystem;
 import BossStageSystem;
+import TETools;
 
 const s = StringBuffer();
 
@@ -184,15 +185,15 @@ function Loop() {
     foreach (cp : EUDLoopPlayer(None,Force1)) {
         //사냥 스테이지라면
         if (GI.stageNum == 0) {
-            if (PI.stageNumOfDeath[cp] == 0) {
+            if (PI.stageNumOfDeath[cp] == 0) {//사망 시점이 사냥 스테이지라면
                 // 현재 체력 (*256 되어있음)
                 const curHp = dwread_epd(PI.graveStoneEpd[cp] + 0x08 / 4); //읽기
                 const maxHp = dwread(0x662350 + 129 * 4);
                 //비석의 체력이 100%라면
-                if (curHp == maxHp) {
+                if (curHp >= maxHp) {
                     // 비석 삭제
                     KillUnit(GC.graveStoneId, cp);
-                    // 사냥 존에 유저 캐릭터 부활
+                    // 사냥 존 중앙에 유저 캐릭터 부활
                     setloc("Loc1", GC.hunt_zone_center_x[cp], GC.hunt_zone_center_y[cp]);
                     CreateUnitBasic(PI.class_id[cp], "Loc1", cp, 1, cp);
                     SetMemoryX(0x666458, SetTo, 391, 0xFFFF);
@@ -201,28 +202,27 @@ function Loop() {
                     RemoveUnit("Scanner Sweep", P8);
                     PI.stageNumOfDeath[cp] = -1;
                 }
-                //아니라면
+                //비석의 체력이 100%가 아니라면
                 else {
                     // 비석의 체력 회복
                     dwwrite_epd(PI.graveStoneEpd[cp] + 0x08 / 4, curHp+20*256);
                 }
                 
             }
-            // else if (PI.stageNumOfDeath[cp] == 1) {
+            // else if (PI.stageNumOfDeath[cp] == 1) {//사망 시점이 보스 스테이지라면
             // //보스 존에 즉시 부활 + 비석 삭제
             // }
         }
         //보스 스테이지라면
         else if(GI.stageNum == 1){
-            // 주변에 캐릭터가 있으면 체력 회복
-            if (PI.stageNumOfDeath[cp] == 1) {
+            if (PI.stageNumOfDeath[cp] == 1) {//사망 시점이 보스 스테이지라면
                 // 현재 체력 (*256 되어있음)
                 const curHp = dwread_epd(PI.graveStoneEpd[cp] + 0x08 / 4); //읽기
                 const maxHp = dwread(0x662350 + 129 * 4);
                 const positionX = dwread_epd(PI.graveStoneEpd[cp] + 0x02C / 4)/256;
                 const positionY = dwread_epd(PI.graveStoneEpd[cp] + 0x030 / 4)/256;
                 //비석의 체력이 100%라면
-                if (curHp == maxHp) {
+                if (curHp >= maxHp) {
                     // 비석 삭제
                     KillUnit(GC.graveStoneId, cp);
                     // 비석 자리에서 그대로 부활
@@ -234,25 +234,39 @@ function Loop() {
                     RemoveUnit("Scanner Sweep", P8);
                     PI.stageNumOfDeath[cp] = -1;
                 }
+                //비석의 체력이 100%가 아니라면
                 else {
-                    //다른 유저가 근처에 오면 비석의 체력 회복
+                    /*
+                    다른 유저가 근처에 오면 비석의 체력 회복
+                     */
+                    setloc("Loc1" , positionX, positionY);//비석 기준 로케이션을 정하기
+                    dilateloc("Loc1", 48, 48); //영향 범위 설정 - 일단 96으로 -> 48
+                    //유닛 그룹을 돌면서 유저 유닛이면서 비석 근처에 있는 걸 찾기
+                    foreach(unit : boss_zone.cploop) {
+                        const epd = unit.epd;
+                        if (Utility.GetUnitType(epd) == 1) {
+                            if ( TETools.CBringEPD(epd, "Loc1", GC.dummyUnit)) {//비석 근처에 유저가 있다면 회복(1번만 하기, 유닛그룹 탈출?)
+                                dwwrite_epd(PI.graveStoneEpd[cp] + 0x08 / 4, curHp+20*256);
+                                break;
+                            }
+                        }
+                    }
                 }
             }
+            // else if(PI.stageNumOfDeath[cp] == 0){//사망 시점이 사냥 스테이지라면
+            // }
         }
             
-        
     }
     
 
     foreach (cp : EUDLoopPlayer(None,Force1)) {
-        
         //플레이어 유닛의 업그레이드에 따른 체력 증가
         const hpUgradeLevelInDat = bread(0x58F332+cp*15);
         if (hpUgradeLevelInDat != PI.hPUpgradeLevel[cp]) {
             SetMemory(0x662350 + PI.class_id[cp] * 4, Add,  5*256);
             PI.hPUpgradeLevel[cp]++;
         }
-
         //사냥 존에서 죽은 유닛 제거 및 최대치 조정
         EUDSwitch(cp);
         foreach (i, group : py_enumerate(huntZoneList)) {
@@ -305,6 +319,5 @@ function Loop() {
                 }
             }
         }
-
     }
 }
