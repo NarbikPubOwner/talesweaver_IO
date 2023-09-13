@@ -83,7 +83,7 @@ function HuntStageProgress() {
                             if (Utility.GetUnitType(unit.epd)==1 ) {
                                 MainGame.boss_zone.add(unit.epd);
                                 //실제 순간이동 코드 작성
-                                MoveUnit(1, Utility.GetUnitGroup(unit.epd), cp, "global_loc", "bossZoneTeleportation");
+                                // MoveUnit(1, Utility.GetUnitGroup(unit.epd), cp, "global_loc", "bossZoneTeleportation");
                                 unit.remove();
                             }
                         }
