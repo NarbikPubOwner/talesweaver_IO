@@ -67,8 +67,35 @@ function impl(e : UnitSkillSystem.Executor) {
     switch (unitType) {
         case GC.루시안_unit_type:
             switch (e.skillNum) {
-                case 4:
+                case 4: //단일 공격 스킬 프로토타입
+                    // if (//플레이어블 유닛이 사망했다면) {
+                    //     //단일 공격 유닛 삭제
+                    // }
+                    //단일 공격 유닛이 있다면
+                    if (PI.QSkillUnitEpd[e.casterPlayer] == 0) {
+                        const nextEpd = epdread_epd(EPD(0x628438));
+                        const x,y = Utility.getCurPositionXYEPD(e.casterEpd);
+                        setloc("Loc1", x,y);
+                        CreateUnit(1, 70, "Loc1", e.casterPlayer);
+                        PI.QSkillUnitEpd[e.casterPlayer] = nextEpd;
+                    }
+                    else {
+                        //유닛이 플레이어블 유닛을 따라다니도록
+                        const px,py = Utility.getCurPositionXYEPD(e.casterEpd);
+                        const stx,sty = Utility.getCurPositionXYEPD(PI.QSkillUnitEpd[e.casterPlayer]);
+                        setloc("Loc1", px,py);
+                        setloc("Loc2", stx,sty);
+                        MoveUnit(All, Utility.GetUnitGroup(PI.QSkillUnitEpd[e.casterPlayer]), e.casterPlayer, "Loc2", "Loc1");
+                        if (bread_epd(e.casterEpd + 0x4C/4, 1) == 10) {//공격 상태라면
+                            //단일 공격 유닛의 orderid를 10으로 만들고 OrderTarget을 주입
+                            const orderTargetPTR , orderTargetEPD = cunitepdread_epd(e.casterEpd + 0x5C/4);
+                            bwrite_epd(PI.QSkillUnitEpd[e.casterPlayer] + 0x4C/4, 1, 10);
+                            dwwrite_epd(PI.QSkillUnitEpd[e.casterPlayer] + 0x5C/4, orderTargetPTR);
+                        }
+
+                    }
                     
+                    return false;
                     break;
                 case 5:
                     
